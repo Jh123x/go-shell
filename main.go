@@ -23,13 +23,16 @@ func main() {
 			continue
 		}
 
-		cmd, args := parseInput(input)
-		out, err2 := execInput(cmd, args)
-		if err2 != nil {
-			fmt.Fprintln(os.Stderr, err)
-			continue
+		cmds := strings.Split(input, "&&")
+		for _, cmd := range cmds {
+			cleanedCmd, args := parseInput(cmd)
+			out, err2 := execInput(cleanedCmd, args)
+			if err2 != nil {
+				fmt.Fprintln(os.Stderr, err)
+				continue
+			}
+			fmt.Println(out)
 		}
-		fmt.Println(out)
 	}
 }
 
