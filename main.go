@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
+
+	command "commands"
 )
 
 func main() {
@@ -26,7 +27,8 @@ func main() {
 		cmds := strings.Split(input, "&&")
 		for _, cmd := range cmds {
 			cleanedCmd, args := parseInput(cmd)
-			out, err2 := execInput(cleanedCmd, args)
+			command := inputToCommand(cleanedCmd, args)
+			out, err2 := command.Execute()
 			if err2 != nil {
 				fmt.Fprintln(os.Stderr, err)
 				continue
@@ -43,84 +45,21 @@ func parseInput(input string) (string, []string) {
 }
 
 // Execute a command based on a clean input
-func execInput(cmd string, args []string) (string, error) {
+func inputToCommand(cmd string, args []string) command.Command {
 	switch cmd {
 	case "dir", "ls":
-		return listDirectoryCommand(args)
+		return command.NewListDirectoryCommand(args)
 	case "cd":
-		return changeDirectoryCommand(args)
+		return command.NewChangeDirectoryCommand(args)
 	case "pwd":
-		return os.Getwd()
+		return command.NewCwdCommand(args)
 	case "exit":
-		os.Exit(0)
-		return "", nil
+		return command.NewExitCommand(args)
 	case "cat":
-		return readFileCommand(args)
+		return command.NewPrintFileCommand(args)
 	case "rm":
-		return removeFileCommand(args)
+		return command.NewRemoveFileCommand(args)
 	default:
-		return defaultCommand(cmd, args)
+		return command.NewDefaultCommand([]string{cmd, args[0]})
 	}
-}
-
-func changeDirectoryCommand(args []string) (string, error) {
-	if len(args) < 1 {
-		return "", fmt.Errorf("cd: missing argument")
-	}
-	return "", os.Chdir(args[0])
-}
-
-func removeFileCommand(args []string) (string, error) {
-	for _, arg := range args {
-		err := os.Remove(arg)
-		if err != nil {
-			return "", err
-		}
-	}
-	return "Successfully Removed", nil
-}
-
-func readFileCommand(args []string) (string, error) {
-	if len(args) < 1 {
-		return "", fmt.Errorf("cat: missing argument")
-	}
-	file, err := os.Open(args[0])
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	arr := []string{}
-	for scanner.Scan() {
-		arr = append(arr, scanner.Text())
-	}
-
-	return strings.Join(arr, "\n"), scanner.Err()
-}
-
-func listDirectoryCommand(args []string) (string, error) {
-	arg := "./"
-	if len(args) > 1 {
-		arg = args[0]
-	}
-	entries, err := os.ReadDir(arg)
-	arr := []string{}
-	for _, f := range entries {
-		arr = append(arr, f.Name())
-	}
-	return strings.Join(arr, "\n"), err
-}
-
-func defaultCommand(cmd_str string, args []string) (string, error) {
-	cmd := exec.Command(cmd_str, args...)
-	err := cmd.Run()
-
-	if err != nil {
-		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == "not found in %PATH%" {
-			return "", fmt.Errorf("command not found: %s", cmd_str)
-		}
-	}
-	outByte, err := cmd.Output()
-	return string(outByte), err
 }
