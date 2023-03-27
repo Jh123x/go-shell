@@ -31,7 +31,7 @@ func (p PrintFileCommand) Execute() (string, error) {
 }
 
 // Constructor
-func NewPrintFileCommand(args []string) *PrintFileCommand {
+func NewPrintFileCommand(args []string) Command {
 	return &PrintFileCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

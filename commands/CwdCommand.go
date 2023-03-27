@@ -16,7 +16,7 @@ func (c CwdCommand) Execute() (string, error) {
 	return os.Getwd()
 }
 
-func NewCwdCommand(args []string) *CwdCommand {
+func NewCwdCommand(args []string) Command {
 	return &CwdCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

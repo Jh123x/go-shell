@@ -19,7 +19,7 @@ func (c ChangeDirectoryCommand) Execute() (string, error) {
 	return "", os.Chdir(c.args[0])
 }
 
-func NewChangeDirectoryCommand(args []string) *ChangeDirectoryCommand {
+func NewChangeDirectoryCommand(args []string) Command {
 	return &ChangeDirectoryCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

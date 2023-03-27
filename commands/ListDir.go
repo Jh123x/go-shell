@@ -22,7 +22,7 @@ func (l ListDirectoryCommand) Execute() (string, error) {
 	return strings.Join(arr, "\n"), err
 }
 
-func NewListDirectoryCommand(args []string) *ListDirectoryCommand {
+func NewListDirectoryCommand(args []string) Command {
 	return &ListDirectoryCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

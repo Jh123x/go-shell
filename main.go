@@ -2,12 +2,21 @@ package main
 
 import (
 	"bufio"
+	"commands"
 	"fmt"
 	"os"
 	"strings"
-
-	command "commands"
 )
+
+var cmdMap = map[string]func(args []string) commands.Command{
+	"dir":  commands.NewListDirectoryCommand,
+	"ls":   commands.NewListDirectoryCommand,
+	"cd":   commands.NewChangeDirectoryCommand,
+	"pwd":  commands.NewCwdCommand,
+	"exit": commands.NewExitCommand,
+	"cat":  commands.NewPrintFileCommand,
+	"rm":   commands.NewRemoveFileCommand,
+}
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
@@ -45,21 +54,10 @@ func parseInput(input string) (string, []string) {
 }
 
 // Execute a command based on a clean input
-func inputToCommand(cmd string, args []string) command.Command {
-	switch cmd {
-	case "dir", "ls":
-		return command.NewListDirectoryCommand(args)
-	case "cd":
-		return command.NewChangeDirectoryCommand(args)
-	case "pwd":
-		return command.NewCwdCommand(args)
-	case "exit":
-		return command.NewExitCommand(args)
-	case "cat":
-		return command.NewPrintFileCommand(args)
-	case "rm":
-		return command.NewRemoveFileCommand(args)
-	default:
-		return command.NewDefaultCommand([]string{cmd, args[0]})
+func inputToCommand(cmd string, args []string) commands.Command {
+	cmdFunc, isFound := cmdMap[cmd]
+	if isFound {
+		return cmdFunc(args)
 	}
+	return commands.NewDefaultCommand([]string{cmd, args[0]})
 }

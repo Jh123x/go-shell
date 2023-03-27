@@ -22,7 +22,7 @@ func (r RemoveFileCommand) Execute() (string, error) {
 	return "Successfully Removed", nil
 }
 
-func NewRemoveFileCommand(args []string) *RemoveFileCommand {
+func NewRemoveFileCommand(args []string) Command {
 	return &RemoveFileCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

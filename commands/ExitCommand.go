@@ -18,7 +18,7 @@ func (c ExitCommand) Execute() (string, error) {
 	return "", nil
 }
 
-func NewExitCommand(args []string) *ExitCommand {
+func NewExitCommand(args []string) Command {
 	return &ExitCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

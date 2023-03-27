@@ -22,7 +22,7 @@ func (c DefaultCommand) Execute() (string, error) {
 	return string(outByte), err
 }
 
-func NewDefaultCommand(args []string) *DefaultCommand {
+func NewDefaultCommand(args []string) Command {
 	return &DefaultCommand{
 		BasicCommand: NewBasicCommand(args),
 	}
