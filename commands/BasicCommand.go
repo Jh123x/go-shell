@@ -69,6 +69,17 @@ func (c *BasicCommand) GetErrorPipe() *os.File {
 	return c.errorPipe
 }
 
+func (c *BasicCommand) Close() {
+	closeIfNonStd(c.outputPipe)
+	closeIfNonStd(c.errorPipe)
+}
+
+func closeIfNonStd(file *os.File) {
+	if file != os.Stdin && file != os.Stdout && file != os.Stderr {
+		file.Close()
+	}
+}
+
 func NewBasicCommand(args []string) BasicCommand {
 	return BasicCommand{
 		inputPipe:  os.Stdin,

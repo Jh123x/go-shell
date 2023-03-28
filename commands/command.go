@@ -13,4 +13,5 @@ type Command interface {
 	GetOutputPipe() *os.File
 	SetErrorPipe(pipe *os.File)
 	GetErrorPipe() *os.File
+	Close()
 }
