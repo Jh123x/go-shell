@@ -57,6 +57,18 @@ func (c *BasicCommand) PrintError(errorMessage error) {
 	fmt.Fprintln(c.errorPipe, errorMessage)
 }
 
+func (c *BasicCommand) GetInputPipe() *os.File {
+	return c.inputPipe
+}
+
+func (c *BasicCommand) GetOutputPipe() *os.File {
+	return c.outputPipe
+}
+
+func (c *BasicCommand) GetErrorPipe() *os.File {
+	return c.errorPipe
+}
+
 func NewBasicCommand(args []string) BasicCommand {
 	return BasicCommand{
 		inputPipe:  os.Stdin,
