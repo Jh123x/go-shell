@@ -16,6 +16,7 @@ var cmdMap = map[string]func(args []string) commands.Command{
 	"exit": commands.NewExitCommand,
 	"cat":  commands.NewPrintFileCommand,
 	"rm":   commands.NewRemoveFileCommand,
+	"up":   commands.NewUpperCommand,
 }
 
 func main() {
@@ -35,9 +36,7 @@ func main() {
 
 		cmds := strings.Split(input, "&&")
 		for _, cmd := range cmds {
-			cleanedCmd, args := parseInput(cmd)
-			command := inputToCommand(cleanedCmd, args)
-			command.Execute()
+			processSubCmd(cmd)
 		}
 	}
 }
@@ -55,4 +54,40 @@ func inputToCommand(cmd string, args []string) commands.Command {
 		return commands.NewDefaultCommand(cmd, args)
 	}
 	return cmdFunc(args)
+}
+
+func processSubCmd(cmd string) {
+	subCmds := strings.Split(cmd, "|")
+
+	// Make cmd array
+	cmdArray := make([]commands.Command, 0, len(subCmds))
+	for _, pipedCmds := range subCmds {
+		cleanedCmd, args := parseInput(pipedCmds)
+		command := inputToCommand(cleanedCmd, args)
+		cmdArray = append(cmdArray, command)
+	}
+
+	// Setup pipes
+	currOutput := os.Stdin
+	for _, command := range cmdArray[:len(cmdArray)-1] {
+		r, w, err := os.Pipe()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return
+		}
+		// Pipe current output to w
+		command.SetInputPipe(currOutput)
+		command.SetOutputPipe(w)
+		currOutput = r
+	}
+
+	// Set final pipe to os.Stdout
+	lastCmd := cmdArray[len(cmdArray)-1]
+	lastCmd.SetInputPipe(currOutput)
+
+	// Execute commands
+	for _, command := range cmdArray {
+		command.Execute()
+		command.Close()
+	}
 }
