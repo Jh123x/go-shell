@@ -56,8 +56,8 @@ func parseInput(input string) (string, []string) {
 // Execute a command based on a clean input
 func inputToCommand(cmd string, args []string) commands.Command {
 	cmdFunc, isFound := cmdMap[cmd]
-	if isFound {
-		return cmdFunc(args)
+	if !isFound {
+		return commands.NewDefaultCommand([]string{cmd, args[0]})
 	}
-	return commands.NewDefaultCommand([]string{cmd, args[0]})
+	return cmdFunc(args)
 }
