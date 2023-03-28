@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,11 +8,13 @@ type CwdCommand struct {
 	BasicCommand
 }
 
-func (c CwdCommand) Execute() (string, error) {
+func (c CwdCommand) Execute() {
 	if len(c.args) > 0 {
-		return "", fmt.Errorf("cwd: too many arguments")
+		c.PrintErrorString("cwd: too many arguments")
 	}
-	return os.Getwd()
+	cwd, err := os.Getwd()
+	c.PrintError(err)
+	c.Print(cwd)
 }
 
 func NewCwdCommand(args []string) Command {

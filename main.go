@@ -37,12 +37,7 @@ func main() {
 		for _, cmd := range cmds {
 			cleanedCmd, args := parseInput(cmd)
 			command := inputToCommand(cleanedCmd, args)
-			out, err2 := command.Execute()
-			if err2 != nil {
-				fmt.Fprintln(os.Stderr, err)
-				continue
-			}
-			fmt.Println(out)
+			command.Execute()
 		}
 	}
 }
@@ -57,7 +52,7 @@ func parseInput(input string) (string, []string) {
 func inputToCommand(cmd string, args []string) commands.Command {
 	cmdFunc, isFound := cmdMap[cmd]
 	if !isFound {
-		return commands.NewDefaultCommand([]string{cmd, args[0]})
+		return commands.NewDefaultCommand(cmd, args)
 	}
 	return cmdFunc(args)
 }

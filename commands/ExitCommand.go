@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,13 +8,13 @@ type ExitCommand struct {
 	BasicCommand
 }
 
-func (c ExitCommand) Execute() (string, error) {
+func (c ExitCommand) Execute() {
 	if len(c.args) > 0 {
-		return "", fmt.Errorf("exit: too many arguments")
+		c.PrintErrorString("exit: too many arguments")
+		return
 	}
 	// Function ends here
 	os.Exit(0)
-	return "", nil
 }
 
 func NewExitCommand(args []string) Command {

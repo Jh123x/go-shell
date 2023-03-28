@@ -9,20 +9,24 @@ type DefaultCommand struct {
 	BasicCommand
 }
 
-func (c DefaultCommand) Execute() (string, error) {
+func (c DefaultCommand) Execute() {
 	cmd := exec.Command(c.args[0], c.args[1:]...)
+	cmd.Stdout = c.outputPipe
+	cmd.Stderr = c.errorPipe
+	cmd.Stdin = c.inputPipe
+
 	err := cmd.Run()
 
 	if err != nil {
 		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == "not found in %PATH%" {
-			return "", fmt.Errorf("command not found: %s", c.args[0])
+			c.PrintErrorString(fmt.Sprintf("command not found: %s", c.args[0]))
 		}
+		return
 	}
-	outByte, err := cmd.Output()
-	return string(outByte), err
 }
 
-func NewDefaultCommand(args []string) Command {
+func NewDefaultCommand(cmd string, args []string) Command {
+	args = append([]string{cmd}, args...)
 	return &DefaultCommand{
 		BasicCommand: NewBasicCommand(args),
 	}

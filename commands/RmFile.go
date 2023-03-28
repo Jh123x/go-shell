@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,17 +8,18 @@ type RemoveFileCommand struct {
 	BasicCommand
 }
 
-func (r RemoveFileCommand) Execute() (string, error) {
+func (r RemoveFileCommand) Execute() {
 	if len(r.args) < 1 {
-		return "", fmt.Errorf("rm: missing argument")
+		r.PrintErrorString("rm: missing argument")
+		return
 	}
 	for _, arg := range r.args {
 		err := os.Remove(arg)
 		if err != nil {
-			return "", err
+			r.PrintError(err)
 		}
 	}
-	return "Successfully Removed", nil
+	r.Print("Successfully Removed")
 }
 
 func NewRemoveFileCommand(args []string) Command {

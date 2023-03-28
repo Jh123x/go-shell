@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,14 +8,16 @@ type ChangeDirectoryCommand struct {
 	BasicCommand
 }
 
-func (c ChangeDirectoryCommand) Execute() (string, error) {
+func (c ChangeDirectoryCommand) Execute() {
 	if len(c.args) < 1 {
-		return "", fmt.Errorf("cd: missing argument")
+		c.PrintErrorString("cd: too few arguments")
+		return
 	}
 	if len(c.args) > 1 {
-		return "", fmt.Errorf("cd: too many arguments")
+		c.PrintErrorString("cd: too many arguments")
+		return
 	}
-	return "", os.Chdir(c.args[0])
+	c.PrintError(os.Chdir(c.args[0]))
 }
 
 func NewChangeDirectoryCommand(args []string) Command {

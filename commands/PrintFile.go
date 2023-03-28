@@ -2,7 +2,6 @@ package commands
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -11,13 +10,14 @@ type PrintFileCommand struct {
 	BasicCommand
 }
 
-func (p PrintFileCommand) Execute() (string, error) {
+func (p PrintFileCommand) Execute() {
 	if len(p.args) < 1 {
-		return "", fmt.Errorf("cat: missing argument")
+		p.PrintErrorString("cat: missing argument")
 	}
 	file, err := os.Open(p.args[0])
 	if err != nil {
-		return "", err
+		p.PrintError(err)
+		return
 	}
 	defer file.Close()
 
@@ -27,7 +27,9 @@ func (p PrintFileCommand) Execute() (string, error) {
 		arr = append(arr, scanner.Text())
 	}
 
-	return strings.Join(arr, "\n"), scanner.Err()
+	p.Print(strings.Join(arr, "\n"))
+	err = scanner.Err()
+	p.PrintError(err)
 }
 
 // Constructor
