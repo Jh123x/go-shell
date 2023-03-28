@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"strings"
 )
@@ -11,8 +12,11 @@ type PrintFileCommand struct {
 }
 
 func (p PrintFileCommand) Execute() {
+
+	// Echo input to output
 	if len(p.args) < 1 {
-		p.PrintErrorString("cat: missing argument")
+		io.Copy(p.outputPipe, p.inputPipe)
+		return
 	}
 	file, err := os.Open(p.args[0])
 	if err != nil {
