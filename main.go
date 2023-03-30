@@ -18,6 +18,7 @@ var cmdMap = map[string]func(args []string) commands.Command{
 	"cat":  commands.NewPrintFileCommand,
 	"rm":   commands.NewRemoveFileCommand,
 	"up":   commands.NewUpperCommand,
+	"dwn":  commands.NewLowerCommand,
 }
 
 func main() {
