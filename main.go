@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 )
 
 var cmdMap = map[string]func(args []string) commands.Command{
@@ -34,6 +35,7 @@ func main() {
 			continue
 		}
 
+		// Not running in parallel because order matters here.
 		cmds := strings.Split(input, "&&")
 		for _, cmd := range cmds {
 			processSubCmd(cmd)
@@ -85,9 +87,19 @@ func processSubCmd(cmd string) {
 	lastCmd := cmdArray[len(cmdArray)-1]
 	lastCmd.SetInputPipe(currOutput)
 
-	// Execute commands
-	for _, command := range cmdArray {
-		command.Execute()
-		command.Close()
+	// Execute commands in parallel and waits for last one
+	mux := sync.Mutex{}
+	mux.Lock()
+	for idx, command := range cmdArray {
+		go func(command commands.Command, idx int, mux *sync.Mutex) {
+			command.Execute()
+			command.Close()
+			if idx == len(cmdArray)-1 {
+				mux.Unlock()
+			}
+		}(command, idx, &mux)
 	}
+
+	// Wait for last command to finish
+	mux.Lock()
 }
