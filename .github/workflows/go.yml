@@ -25,7 +25,13 @@ jobs:
       run: go build -v ./...
 
     - name: Test main
-      run: go test -v ./...
+      run: go test -v ./... -coverprofile=coverage.out
+
+    - name: Test main coverage
+      run: go tool cover -func coverage
 
     - name: Test commands
-      run: go test -v commands
+      run: go test -v commands -coverprofile=command_coverage.out
+
+    - name: Test commands coverage
+      run: go tool cover -func command_coverage
