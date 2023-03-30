@@ -9,17 +9,7 @@ import (
 	"sync"
 )
 
-var cmdMap = map[string]func(args []string) commands.Command{
-	"dir":  commands.NewListDirectoryCommand,
-	"ls":   commands.NewListDirectoryCommand,
-	"cd":   commands.NewChangeDirectoryCommand,
-	"pwd":  commands.NewCwdCommand,
-	"exit": commands.NewExitCommand,
-	"cat":  commands.NewPrintFileCommand,
-	"rm":   commands.NewRemoveFileCommand,
-	"up":   commands.NewUpperCommand,
-	"dwn":  commands.NewLowerCommand,
-}
+var cmdManager = commands.NewCommandManager()
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
@@ -52,7 +42,7 @@ func parseInput(input string) (string, []string) {
 
 // Execute a command based on a clean input
 func inputToCommand(cmd string, args []string) commands.Command {
-	cmdFunc, isFound := cmdMap[cmd]
+	cmdFunc, isFound := cmdManager.GetCommand(cmd)
 	if !isFound {
 		return commands.NewDefaultCommand(cmd, args)
 	}
