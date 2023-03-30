@@ -53,3 +53,15 @@ func TestGetCommand(t *testing.T) {
 		)
 	}
 }
+
+func TestGetCommandMap(t *testing.T) {
+	cm := NewCommandManager()
+	if cm == nil {
+		t.Errorf("NewCommandManager() returned nil")
+	}
+
+	// Check if map is equal to mappedCommands
+	if cmdMap := cm.GetCommandMap(); !reflect.DeepEqual(cmdMap, mappedCommands) {
+		t.Errorf("GetCommandMap() returned an invalid map")
+	}
+}

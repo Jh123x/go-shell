@@ -10,6 +10,10 @@ func (c *CommandManager) GetCommand(name string) (func(args []string) Command, b
 	return cmd, ok
 }
 
+func (c *CommandManager) GetCommandMap() map[string]func(args []string) Command {
+	return c.mappedCommands
+}
+
 var mappedCommands = map[string]func(args []string) Command{
 	"dir":  NewListDirectoryCommand,
 	"ls":   NewListDirectoryCommand,
