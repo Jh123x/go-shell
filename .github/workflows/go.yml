@@ -28,7 +28,7 @@ jobs:
         echo ${GOROOT}
 
     - name: Build
-      run: go build -v ./... commands
+      run: go build -v ./...
 
     - name: Test
       run: go test -v -coverprofile=coverage . commands
