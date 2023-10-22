@@ -3,14 +3,15 @@ package commands
 import (
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // Create tests
 func TestNewCommandManager(t *testing.T) {
+	defer func() { assert.Nil(t, recover()) }()
 	cm := NewCommandManager()
-	if cm == nil {
-		t.Errorf("NewCommandManager() returned nil")
-	}
+	assert.NotNil(t, cm)
 }
 
 func TestGetCommand(t *testing.T) {
@@ -37,31 +38,21 @@ func TestGetCommand(t *testing.T) {
 
 	// Run the tests
 	for _, tt := range tests {
-		t.Run(
-			tt.name,
-			func(t *testing.T) {
-				if cmd, ok := cm.GetCommand(tt.name); cmd == nil || !ok {
-					t.Errorf("GetCommand() returned nil or false")
-				} else {
-					result := cmd(emptyArgs)
-					// Check if commands are the same type
-					if reflect.TypeOf(result) != reflect.TypeOf(tt.want) {
-						t.Errorf("GetCommand() returned wrong command type")
-					}
-				}
-			},
-		)
+		t.Run(tt.name, func(t *testing.T) {
+			cmd, ok := cm.GetCommand(tt.name)
+			assert.NotNil(t, cmd)
+			assert.True(t, ok)
+			result := cmd(emptyArgs)
+			assert.Equal(t, reflect.TypeOf(result), reflect.TypeOf(tt.want))
+		})
 	}
 }
 
 func TestGetCommandMap(t *testing.T) {
 	cm := NewCommandManager()
-	if cm == nil {
-		t.Errorf("NewCommandManager() returned nil")
-	}
+	assert.NotNil(t, cm)
+	cmdMap := cm.GetCommandMap()
 
 	// Check if map is equal to mappedCommands
-	if cmdMap := cm.GetCommandMap(); !reflect.DeepEqual(cmdMap, mappedCommands) {
-		t.Errorf("GetCommandMap() returned an invalid map")
-	}
+	assert.Equal(t, cmdMap, mappedCommands)
 }

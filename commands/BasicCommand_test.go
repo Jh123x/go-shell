@@ -4,183 +4,198 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/Jh123x/go-shell/consts"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewBasicCommand(t *testing.T) {
 	basicCommand := NewBasicCommand([]string{""})
-
-	if basicCommand.inputPipe != os.Stdin {
-		t.Errorf("NewBasicCommand() did not set inputPipe to os.Stdin")
-	}
-
-	if basicCommand.outputPipe != os.Stdout {
-		t.Errorf("NewBasicCommand() did not set outputPipe to os.Stdout")
-	}
-
-	if basicCommand.errorPipe != os.Stderr {
-		t.Errorf("NewBasicCommand() did not set errorPipe to os.Stderr")
-	}
+	assert.Equal(t, os.Stdin, basicCommand.inputPipe)
+	assert.Equal(t, os.Stdout, basicCommand.outputPipe)
+	assert.Equal(t, os.Stderr, basicCommand.errorPipe)
 }
 
 func TestExecute(t *testing.T) {
 	basicCommand := NewBasicCommand([]string{""})
 
 	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("TestExecute() could not create pipe")
-	}
+	assert.Nil(t, err)
 	basicCommand.errorPipe = w
 	basicCommand.Execute()
 
 	buf := make([]byte, 1024)
 	n, err := r.Read(buf)
-	if err != nil {
-		t.Errorf("TestExecute() could not read from pipe")
-	}
+	assert.Nil(t, err)
 
 	err_msg := string(buf[:n])
-	if err_msg != "error: command not implemented\n" {
-		t.Errorf("TestExecute() did not print correct error message, got %s", err_msg)
-	}
+	assert.Equal(t, "error: command not implemented\n", err_msg)
 }
 
 func TestSetPipes(t *testing.T) {
 	basicCommand := NewBasicCommand([]string{""})
 
 	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("TestSetPipes() could not create pipe")
-	}
+	assert.Nil(t, err)
+	defer r.Close()
+	defer w.Close()
 
 	t.Run("SetInputPipe", func(t *testing.T) {
 		basicCommand.SetInputPipe(r)
-		if basicCommand.inputPipe != r {
-			t.Errorf("TestSetPipes() did not set inputPipe correctly")
-		}
+		assert.Equal(t, r, basicCommand.inputPipe)
 	})
 
 	t.Run("SetOutputPipe", func(t *testing.T) {
 		basicCommand.SetOutputPipe(w)
-		if basicCommand.outputPipe != w {
-			t.Errorf("TestSetPipes() did not set outputPipe correctly")
-		}
+		assert.Equal(t, w, basicCommand.outputPipe)
 	})
 
 	t.Run("SetErrorPipe", func(t *testing.T) {
 		basicCommand.SetErrorPipe(w)
-		if basicCommand.errorPipe != w {
-			t.Errorf("TestSetPipes() did not set errorPipe correctly")
-		}
+		assert.Equal(t, w, basicCommand.errorPipe)
 	})
-
-	// Close all of them
-	r.Close()
-	w.Close()
 }
 
 func TestGetPipes(t *testing.T) {
 	basicCommand := NewBasicCommand([]string{""})
 
 	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("TestGetPipes() could not create pipe")
-	}
+	assert.Nil(t, err)
+	defer r.Close()
+	defer w.Close()
 
 	basicCommand.inputPipe = r
 	basicCommand.outputPipe = w
 	basicCommand.errorPipe = w
 
 	t.Run("GetInputPipe", func(t *testing.T) {
-		if basicCommand.GetInputPipe() != r {
-			t.Errorf("TestGetPipes() did not get inputPipe correctly")
-		}
+		assert.Equal(t, r, basicCommand.GetInputPipe())
 	})
 
 	t.Run("GetOutputPipe", func(t *testing.T) {
-		if basicCommand.GetOutputPipe() != w {
-			t.Errorf("TestGetPipes() did not get outputPipe correctly")
-		}
+		assert.Equal(t, w, basicCommand.GetOutputPipe())
 	})
 
 	t.Run("GetErrorPipe", func(t *testing.T) {
-		if basicCommand.GetErrorPipe() != w {
-			t.Errorf("TestGetPipes() did not get errorPipe correctly")
-		}
+		assert.Equal(t, w, basicCommand.GetErrorPipe())
 	})
-
-	// Close all of them
-	r.Close()
-	w.Close()
 }
 
 // Test Print
 func TestPrint(t *testing.T) {
-	basicCommand := NewBasicCommand([]string{""})
-
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("TestPrint() could not create pipe")
+	tests := map[string]struct {
+		input       string
+		expectedErr error
+		expectedRes string
+	}{
+		"valid string": {
+			input:       "test",
+			expectedErr: nil,
+			expectedRes: "test\n",
+		},
+		"empty string": {
+			input:       "",
+			expectedErr: consts.EOFError,
+			expectedRes: "",
+		},
 	}
-	basicCommand.outputPipe = w
 
-	basicCommand.Print("test")
-	w.Close()
-	buf := make([]byte, 1024)
-	n, err := r.Read(buf)
-	if err != nil {
-		t.Errorf("TestPrint() could not read from pipe")
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			basicCommand := NewBasicCommand([]string{""})
+
+			r, w, err := os.Pipe()
+			assert.Nil(t, err)
+			basicCommand.outputPipe = w
+			basicCommand.Print(tc.input)
+			w.Close()
+			buf := make([]byte, 1024)
+			n, err := r.Read(buf)
+			assert.Equal(t, tc.expectedErr, err)
+
+			out := string(buf[:n])
+			assert.Equal(t, tc.expectedRes, out)
+		})
 	}
 
-	out := string(buf[:n])
-	if out != "test\n" {
-		t.Errorf("TestPrint() did not print correct message, got '%s'", out)
-	}
 }
 
 func TestPrintErrorString(t *testing.T) {
-	basicCommand := NewBasicCommand([]string{""})
 
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("TestPrintErrorString() could not create pipe")
+	test := map[string]struct {
+		input         string
+		expectedWrite string
+		expectedErr   error
+	}{
+		"valid string": {
+			input:         "test",
+			expectedWrite: "test\n",
+			expectedErr:   nil,
+		},
+		"empty string": {
+			input:         "",
+			expectedWrite: "",
+			expectedErr:   consts.EOFError,
+		},
 	}
-	basicCommand.errorPipe = w
 
-	basicCommand.PrintErrorString("test")
-	w.Close()
-	buf := make([]byte, 1024)
-	n, err := r.Read(buf)
-	if err != nil {
-		t.Errorf("TestPrintErrorString() could not read from pipe")
-	}
+	for name, tc := range test {
+		t.Run(name, func(t *testing.T) {
+			basicCommand := NewBasicCommand([]string{""})
 
-	out := string(buf[:n])
-	if out != "test\n" {
-		t.Errorf("TestPrintErrorString() did not print correct message, got '%s'", out)
+			r, w, err := os.Pipe()
+			assert.Nil(t, err)
+			defer r.Close()
+			basicCommand.errorPipe = w
+
+			basicCommand.PrintErrorString(tc.input)
+			w.Close()
+			buf := make([]byte, 1024)
+			n, err := r.Read(buf)
+			assert.Equal(t, tc.expectedErr, err)
+
+			out := string(buf[:n])
+			assert.Equal(t, tc.expectedWrite, out)
+		})
 	}
 }
 
 func TestPrintError(t *testing.T) {
-	basicCommand := NewBasicCommand([]string{""})
-
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("TestPrintError() could not create pipe")
+	tests := map[string]struct {
+		inputErr    error
+		expectedRes string
+		expectedErr error
+	}{
+		"valid error": {
+			inputErr:    fmt.Errorf("test"),
+			expectedRes: "test\n",
+			expectedErr: nil,
+		},
+		"empty msg": {
+			inputErr:    nil,
+			expectedRes: "",
+			expectedErr: consts.EOFError,
+		},
 	}
-	basicCommand.errorPipe = w
 
-	basicCommand.PrintError(fmt.Errorf("test"))
-	w.Close()
-	buf := make([]byte, 1024)
-	n, err := r.Read(buf)
-	if err != nil {
-		t.Errorf("TestPrintError() could not read from pipe")
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			basicCommand := NewBasicCommand([]string{""})
+
+			r, w, err := os.Pipe()
+			assert.Nil(t, err)
+			basicCommand.errorPipe = w
+			basicCommand.PrintError(tc.inputErr)
+			w.Close()
+			buf := make([]byte, 1024)
+			n, err := r.Read(buf)
+			assert.Equal(t, tc.expectedErr, err)
+
+			out := string(buf[:n])
+			assert.Equal(t, tc.expectedRes, out)
+		})
 	}
 
-	out := string(buf[:n])
-	if out != "test\n" {
-		t.Errorf("TestPrintError() did not print correct message, got '%s'", out)
-	}
 }
 
 func TestClose(t *testing.T) {
@@ -188,15 +203,7 @@ func TestClose(t *testing.T) {
 
 	// Do not close standard pipes
 	basicCommand.Close()
-	if basicCommand.inputPipe != os.Stdin {
-		t.Errorf("TestClose() closed standard inputPipe")
-	}
-
-	if basicCommand.outputPipe != os.Stdout {
-		t.Errorf("TestClose() closed standard outputPipe")
-	}
-
-	if basicCommand.errorPipe != os.Stderr {
-		t.Errorf("TestClose() closed standard errorPipe")
-	}
+	assert.Equal(t, os.Stdin, basicCommand.inputPipe)
+	assert.Equal(t, os.Stdout, basicCommand.outputPipe)
+	assert.Equal(t, os.Stderr, basicCommand.errorPipe)
 }

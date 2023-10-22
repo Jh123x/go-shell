@@ -1,9 +1,12 @@
 package commands
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
+
+	"github.com/Jh123x/go-shell/consts"
+	"github.com/stretchr/testify/assert"
 )
 
 // NewCwdCommand returns a new CwdCommand
@@ -37,35 +40,50 @@ func TestNewCwdCommand(t *testing.T) {
 
 // Execute executes the CwdCommand
 func TestExecuteCwd(t *testing.T) {
-	// Save current dir
-	cwd, err := os.Getwd()
-
-	if err != nil {
-		t.Errorf("Could not get current working directory")
+	tests := map[string]struct {
+		args        []string
+		expectedErr string
+	}{
+		"no args": {
+			args: []string{},
+		},
+		"with args": {
+			args:        []string{"test"},
+			expectedErr: consts.TooManyArgsErr + "\n",
+		},
 	}
 
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Errorf("Could not create pipe")
-	}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			// Save current dir
+			cwd, err := os.Getwd()
+			assert.Nil(t, err)
 
-	cmd := NewCwdCommand([]string{})
-	cmd.SetOutputPipe(w)
-	cmd.Execute()
-	cmd.Close()
+			r, w, err := os.Pipe()
+			assert.Nil(t, err)
 
-	if err != nil {
-		t.Errorf("Could not get current working directory")
-	}
+			//err pipe
+			rErr, wErr, err := os.Pipe()
+			assert.Nil(t, err)
 
-	// Check if it matches cwd
-	newCwd, err := ioutil.ReadAll(r)
-	if err != nil {
-		t.Errorf("Could not read from pipe")
-	}
+			cmd := NewCwdCommand(tc.args)
+			cmd.SetOutputPipe(w)
+			cmd.SetErrorPipe(wErr)
+			cmd.Execute()
+			cmd.Close()
+			assert.Nil(t, err)
 
-	cwdCmd := string(newCwd)[0 : len(newCwd)-1]
-	if cwdCmd != cwd {
-		t.Errorf("Directory did not match, got %s, want %s", cwdCmd, cwd)
+			// Check if it matches cwd
+			newCwd, err := io.ReadAll(r)
+			if len(tc.expectedErr) > 0 {
+				rErrBytes, err := io.ReadAll(rErr)
+				assert.Nil(t, err)
+				assert.Equal(t, tc.expectedErr, string(rErrBytes))
+			} else {
+				assert.Nil(t, err)
+				assert.Equal(t, cwd, string(newCwd)[0:len(newCwd)-1])
+			}
+
+		})
 	}
 }
