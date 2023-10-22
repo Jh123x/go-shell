@@ -3,6 +3,8 @@ package commands
 import (
 	"io"
 	"strings"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type UpperCommand struct {
@@ -21,7 +23,7 @@ func (c UpperCommand) Execute() {
 				break
 			}
 			if err != nil {
-				c.PrintErrorString("Error reading from input")
+				c.PrintErrorString(consts.ReadingInputErr)
 				c.PrintError(err)
 				break
 			}

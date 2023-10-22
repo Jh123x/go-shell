@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 	"os/exec"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type DefaultCommand struct {
@@ -18,9 +20,11 @@ func (c DefaultCommand) Execute() {
 	err := cmd.Run()
 
 	if err != nil {
-		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == "not found in %PATH%" {
-			c.PrintErrorString(fmt.Sprintf("command not found: %s", c.args[0]))
+		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == consts.NotFoundInPathPartialString {
+			c.PrintErrorString(fmt.Sprintf(consts.CmdNotFoundErr, c.args[0]))
+			return
 		}
+		c.PrintError(err)
 		return
 	}
 }

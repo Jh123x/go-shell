@@ -2,6 +2,8 @@ package commands
 
 import (
 	"os"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type ExitCommand struct {
@@ -10,7 +12,7 @@ type ExitCommand struct {
 
 func (c ExitCommand) Execute() {
 	if len(c.args) > 0 {
-		c.PrintErrorString("exit: too many arguments")
+		c.PrintErrorString(consts.TooManyArgsErr)
 		return
 	}
 	// Function ends here

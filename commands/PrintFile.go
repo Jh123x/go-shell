@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"io"
 	"os"
-	"strings"
 )
 
 type PrintFileCommand struct {
@@ -26,14 +25,10 @@ func (p PrintFileCommand) Execute() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	arr := []string{}
 	for scanner.Scan() {
-		arr = append(arr, scanner.Text())
+		p.Print(scanner.Text() + "\n")
 	}
-
-	p.Print(strings.Join(arr, "\n"))
-	err = scanner.Err()
-	p.PrintError(err)
+	p.PrintError(scanner.Err())
 }
 
 // Constructor

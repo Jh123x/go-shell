@@ -2,6 +2,8 @@ package commands
 
 import (
 	"os"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type ChangeDirectoryCommand struct {
@@ -9,12 +11,8 @@ type ChangeDirectoryCommand struct {
 }
 
 func (c ChangeDirectoryCommand) Execute() {
-	if len(c.args) < 1 {
-		c.PrintErrorString("cd: too few arguments")
-		return
-	}
-	if len(c.args) > 1 {
-		c.PrintErrorString("cd: too many arguments")
+	if len(c.args) != 1 {
+		c.PrintErrorString(consts.TooManyArgsErr)
 		return
 	}
 	c.PrintError(os.Chdir(c.args[0]))
