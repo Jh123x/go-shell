@@ -23,7 +23,7 @@ func (c LowerCommand) Execute() {
 				break
 			}
 			if err != nil {
-				c.PrintErrorString(consts.ReadInputErr)
+				c.PrintErrorString(consts.ReadInputErrStr)
 				c.PrintError(err)
 				break
 			}

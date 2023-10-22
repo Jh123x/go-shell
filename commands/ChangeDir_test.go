@@ -54,7 +54,7 @@ func TestExecuteChangeDir(t *testing.T) {
 		},
 		"wrong no of args": {
 			args:        []string{"test", "test"},
-			expectedErr: consts.TooManyArgsErr + "\n",
+			expectedErr: consts.TooManyArgsErrStr + "\n",
 			expectedCwd: cwd,
 		},
 	}

@@ -45,7 +45,7 @@ func TestExecuteListDir(t *testing.T) {
 		{
 			args:           []string{"../..", ".."},
 			expectedOut:    false,
-			expectedErrMsg: consts.TooManyArgsErr + "\n",
+			expectedErrMsg: consts.TooManyArgsErrStr + "\n",
 		},
 	}
 	for _, tt := range tests {

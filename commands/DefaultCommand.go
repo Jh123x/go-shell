@@ -20,8 +20,8 @@ func (c DefaultCommand) Execute() {
 	err := cmd.Run()
 
 	if err != nil {
-		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == consts.NotFoundInPathPartialString {
-			c.PrintErrorString(fmt.Sprintf(consts.CmdNotFoundErr, c.args[0]))
+		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == consts.NotFoundInPathPartialStr {
+			c.PrintErrorString(fmt.Sprintf(consts.CmdNotFoundErrStr, c.args[0]))
 			return
 		}
 		c.PrintError(err)

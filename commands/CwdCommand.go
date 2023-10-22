@@ -12,7 +12,7 @@ type CwdCommand struct {
 
 func (c CwdCommand) Execute() {
 	if len(c.args) > 0 {
-		c.PrintErrorString(consts.TooManyArgsErr)
+		c.PrintErrorString(consts.TooManyArgsErrStr)
 		return
 	}
 	cwd, err := os.Getwd()

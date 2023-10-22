@@ -47,7 +47,7 @@ func TestExecuteExitWithArgs(t *testing.T) {
 	// Read from pipe
 	res, err := io.ReadAll(r)
 	assert.Nil(t, err)
-	assert.Equal(t, consts.TooManyArgsErr+"\n", string(res))
+	assert.Equal(t, consts.TooManyArgsErrStr+"\n", string(res))
 }
 
 func TestExecuteExit(t *testing.T) {

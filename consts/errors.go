@@ -3,6 +3,6 @@ package consts
 import "fmt"
 
 var (
-	UnimplementedError = fmt.Errorf(NotImplementedErr)
+	UnimplementedError = fmt.Errorf(NotImplementedErrStr)
 	EOFError           = fmt.Errorf("%s", "EOF")
 )

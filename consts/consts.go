@@ -1,15 +1,14 @@
 package consts
 
 const (
-	WriteErrFormatString        = "error: could not write all bytes to output pipe (%d written, %d message)"
-	NotFoundInPathPartialString = "not found in %PATH%"
-
 	FileRemoveSuccess = "Successfully Removed"
 
-	ReadInputErr      = "Error reading from input"
-	CmdNotFoundErr    = "command not found: %s"
-	TooManyArgsErr    = "error: too many arguments"
-	MissingArgsErr    = "error: missing arguments"
-	ReadingInputErr   = "error: reading input"
-	NotImplementedErr = "error: command not implemented"
+	WriteErrFormatStr        = "error: could not write all bytes to output pipe (%d written, %d message)"
+	NotFoundInPathPartialStr = "not found in %PATH%"
+	ReadInputErrStr          = "Error reading from input"
+	CmdNotFoundErrStr        = "command not found: %s"
+	TooManyArgsErrStr        = "error: too many arguments"
+	MissingArgsErrStr        = "error: missing arguments"
+	ReadingInputErrStr       = "error: reading input"
+	NotImplementedErrStr     = "error: command not implemented"
 )

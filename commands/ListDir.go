@@ -14,7 +14,7 @@ type ListDirectoryCommand struct {
 func (l ListDirectoryCommand) Execute() {
 	arg := "./"
 	if len(l.args) > 1 {
-		l.PrintErrorString(consts.TooManyArgsErr)
+		l.PrintErrorString(consts.TooManyArgsErrStr)
 		return
 	}
 	if len(l.args) == 1 {

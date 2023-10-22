@@ -49,7 +49,7 @@ func TestExecuteCwd(t *testing.T) {
 		},
 		"with args": {
 			args:        []string{"test"},
-			expectedErr: consts.TooManyArgsErr + "\n",
+			expectedErr: consts.TooManyArgsErrStr + "\n",
 		},
 	}
 

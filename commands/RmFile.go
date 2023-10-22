@@ -12,7 +12,7 @@ type RemoveFileCommand struct {
 
 func (r RemoveFileCommand) Execute() {
 	if len(r.args) < 1 {
-		r.PrintErrorString(consts.MissingArgsErr)
+		r.PrintErrorString(consts.MissingArgsErrStr)
 		return
 	}
 	for _, arg := range r.args {

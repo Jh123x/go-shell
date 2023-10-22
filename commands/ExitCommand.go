@@ -12,7 +12,7 @@ type ExitCommand struct {
 
 func (c ExitCommand) Execute() {
 	if len(c.args) > 0 {
-		c.PrintErrorString(consts.TooManyArgsErr)
+		c.PrintErrorString(consts.TooManyArgsErrStr)
 		return
 	}
 	// Function ends here

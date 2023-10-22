@@ -42,7 +42,7 @@ func (c *BasicCommand) Print(message string) {
 
 	if lenWritten < len(message) {
 		c.PrintErrorString(
-			fmt.Sprintf(consts.WriteErrFormatString, lenWritten, len(message)))
+			fmt.Sprintf(consts.WriteErrFormatStr, lenWritten, len(message)))
 	}
 }
 
