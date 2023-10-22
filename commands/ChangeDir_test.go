@@ -29,9 +29,7 @@ func TestNewChangeDirectoryCommand(t *testing.T) {
 		t.Run(
 			"TestNewChangeDirectoryCommand",
 			func(t *testing.T) {
-				if got := NewChangeDirectoryCommand(tt.args); got == nil {
-					t.Errorf("NewChangeDirectoryCommand() returned nil")
-				}
+				assert.NotNil(t, NewChangeDirectoryCommand(tt.args))
 			},
 		)
 	}

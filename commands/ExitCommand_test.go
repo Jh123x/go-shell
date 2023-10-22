@@ -22,14 +22,9 @@ func TestNewExitCommand(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(
-			"TestNewExitCommand",
-			func(t *testing.T) {
-				if got := NewExitCommand(tt.args); got == nil {
-					t.Errorf("NewExitCommand() returned nil")
-				}
-			},
-		)
+		t.Run("TestNewExitCommand", func(t *testing.T) {
+			assert.NotNil(t, NewExitCommand(tt.args))
+		})
 	}
 }
 

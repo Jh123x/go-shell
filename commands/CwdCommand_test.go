@@ -30,9 +30,7 @@ func TestNewCwdCommand(t *testing.T) {
 		t.Run(
 			"TestNewCwdCommand",
 			func(t *testing.T) {
-				if got := NewCwdCommand(tt.args); got == nil {
-					t.Errorf("NewCwdCommand() returned nil")
-				}
+				assert.NotNil(t, NewCwdCommand(tt.args))
 			},
 		)
 	}
