@@ -26,7 +26,7 @@ func (p PrintFileCommand) Execute() {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		p.Print(scanner.Text() + "\n")
+		p.Print(scanner.Text())
 	}
 	p.PrintError(scanner.Err())
 }

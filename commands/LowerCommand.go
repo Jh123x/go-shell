@@ -13,31 +13,27 @@ type LowerCommand struct {
 
 func (c LowerCommand) Execute() {
 
-	// If there are no args, read from stdin
-	if len(c.args) < 1 {
-
-		buffer := make([]byte, 1024)
-		for {
-			n, err := c.GetInputPipe().Read(buffer)
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				c.PrintErrorString(consts.ReadInputErrStr)
-				c.PrintError(err)
-				break
-			}
-			c.Print(strings.ToLower(string(buffer[:n])))
-			// If reach EOF break
-			buffer = make([]byte, 1024)
-
-		}
-
+	if len(c.args) > 0 {
+		// Join args with space
+		c.Print(strings.ToLower(strings.Join(c.args, " ")))
 		return
 	}
-	// Join args with space
-	c.Print(strings.ToUpper(strings.Join(c.args, " ")))
-
+	// If there are no args, read from stdin
+	buffer := make([]byte, 1024)
+	for {
+		n, err := c.GetInputPipe().Read(buffer)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			c.PrintErrorString(consts.ReadInputErrStr)
+			c.PrintError(err)
+			break
+		}
+		c.Print(strings.ToLower(string(buffer[:n])))
+		// If reach EOF break
+		buffer = make([]byte, 1024)
+	}
 }
 
 func NewLowerCommand(args []string) Command {

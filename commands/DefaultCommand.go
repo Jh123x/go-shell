@@ -12,6 +12,10 @@ type DefaultCommand struct {
 }
 
 func (c DefaultCommand) Execute() {
+	if len(c.args) == 0 || c.args[0] == "" {
+		c.PrintErrorString(consts.MissingArgsErrStr)
+		return
+	}
 	cmd := exec.Command(c.args[0], c.args[1:]...)
 	cmd.Stdout = c.outputPipe
 	cmd.Stderr = c.errorPipe

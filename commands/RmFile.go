@@ -19,6 +19,7 @@ func (r RemoveFileCommand) Execute() {
 		err := os.Remove(arg)
 		if err != nil {
 			r.PrintError(err)
+			return
 		}
 	}
 	r.Print(consts.FileRemoveSuccess)
