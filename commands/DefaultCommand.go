@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/Jh123x/go-shell/consts"
 )
@@ -24,7 +25,7 @@ func (c DefaultCommand) Execute() {
 	err := cmd.Run()
 
 	if err != nil {
-		if errStr := err.Error(); len(errStr) > 19 && errStr[len(errStr)-19:] == consts.NotFoundInPathPartialStr {
+		if errStr := err.Error(); len(errStr) > 19 && strings.Contains(errStr, consts.NotFoundInPathPartialStr) {
 			c.PrintErrorString(fmt.Sprintf(consts.CmdNotFoundErrStr, c.args[0]))
 			return
 		}

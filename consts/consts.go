@@ -4,7 +4,7 @@ const (
 	FileRemoveSuccess = "Successfully Removed"
 
 	WriteErrFormatStr        = "error: could not write all bytes to output pipe (%d written, %d message)"
-	NotFoundInPathPartialStr = "not found in %PATH%"
+	NotFoundInPathPartialStr = "not found"
 	ReadInputErrStr          = "Error reading from input"
 	CmdNotFoundErrStr        = "command not found: %s"
 	TooManyArgsErrStr        = "error: too many arguments"
