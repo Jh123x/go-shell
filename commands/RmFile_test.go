@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -20,7 +21,7 @@ func TestRmFile(t *testing.T) {
 			args:            []string{"../tests/does_not_exist.txt"},
 			createdFileName: "",
 			expectedOut:     "",
-			expectedErr:     "remove ../tests/does_not_exist.txt: The system cannot find the file specified.\n",
+			expectedErr:     fmt.Sprintf(consts.FileNotFoundErrStr+"\n", "../tests/does_not_exist.txt"),
 		},
 		"file found": {
 			args:            []string{"../tests/test_file.txt"},

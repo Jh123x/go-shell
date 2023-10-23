@@ -11,4 +11,5 @@ const (
 	MissingArgsErrStr        = "error: missing arguments"
 	ReadingInputErrStr       = "error: reading input"
 	NotImplementedErrStr     = "error: command not implemented"
+	FileNotFoundErrStr       = "error: %s not found"
 )

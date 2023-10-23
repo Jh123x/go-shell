@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/Jh123x/go-shell/consts"
@@ -18,7 +19,9 @@ func (r RemoveFileCommand) Execute() {
 	for _, arg := range r.args {
 		err := os.Remove(arg)
 		if err != nil {
-			r.PrintError(err)
+			r.PrintErrorString(
+				fmt.Sprintf(consts.FileNotFoundErrStr, arg),
+			)
 			return
 		}
 	}
