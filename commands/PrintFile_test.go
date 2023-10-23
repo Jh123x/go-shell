@@ -28,7 +28,7 @@ func TestPrintCommand(t *testing.T) {
 		"file not found": {
 			args:        []string{"../tests/does_not_exist.txt"},
 			expectedOut: "",
-			expectedErr: "open ../tests/does_not_exist.txt: The system cannot find the file specified.\n",
+			expectedErr: "error: ../tests/does_not_exist.txt not found\n",
 		},
 		"no args": {
 			args:        []string{},
