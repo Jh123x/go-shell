@@ -1,7 +1,10 @@
 package commands
 
 import (
+	"fmt"
 	"os"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type RemoveFileCommand struct {
@@ -10,16 +13,19 @@ type RemoveFileCommand struct {
 
 func (r RemoveFileCommand) Execute() {
 	if len(r.args) < 1 {
-		r.PrintErrorString("rm: missing argument")
+		r.PrintErrorString(consts.MissingArgsErrStr)
 		return
 	}
 	for _, arg := range r.args {
 		err := os.Remove(arg)
 		if err != nil {
-			r.PrintError(err)
+			r.PrintErrorString(
+				fmt.Sprintf(consts.FileNotFoundErrStr, arg),
+			)
+			return
 		}
 	}
-	r.Print("Successfully Removed")
+	r.Print(consts.FileRemoveSuccess)
 }
 
 func NewRemoveFileCommand(args []string) Command {

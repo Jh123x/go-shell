@@ -2,7 +2,11 @@ package commands
 
 import (
 	"os"
+	"strings"
 	"testing"
+
+	"github.com/Jh123x/go-shell/consts"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewChangeDirectoryCommand(t *testing.T) {
@@ -25,9 +29,7 @@ func TestNewChangeDirectoryCommand(t *testing.T) {
 		t.Run(
 			"TestNewChangeDirectoryCommand",
 			func(t *testing.T) {
-				if got := NewChangeDirectoryCommand(tt.args); got == nil {
-					t.Errorf("NewChangeDirectoryCommand() returned nil")
-				}
+				assert.NotNil(t, NewChangeDirectoryCommand(tt.args))
 			},
 		)
 	}
@@ -36,24 +38,53 @@ func TestNewChangeDirectoryCommand(t *testing.T) {
 func TestExecuteChangeDir(t *testing.T) {
 	// Save current dir
 	cwd, err := os.Getwd()
+	assert.Nil(t, err)
 
-	if err != nil {
-		t.Errorf("Could not get current working directory")
+	tests := map[string]struct {
+		args        []string
+		expectedErr string
+		expectedCwd string
+	}{
+		"change dir to itself": {
+			args:        []string{"."},
+			expectedErr: "",
+			expectedCwd: cwd,
+		},
+		"wrong no of args": {
+			args:        []string{"test", "test"},
+			expectedErr: consts.TooManyArgsErrStr + "\n",
+			expectedCwd: cwd,
+		},
 	}
 
-	// Change to parent dir
-	cmd := NewChangeDirectoryCommand([]string{".."})
-	cmd.Execute()
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			defer func() { os.Chdir(cwd) }()
+			// Setup pipes
+			r, w, err := os.Pipe()
+			assert.Nil(t, err)
 
-	// Check if dir changed
-	newCwd, err := os.Getwd()
+			// Change to parent dir
+			cmd := NewChangeDirectoryCommand(tc.args)
+			cmd.SetErrorPipe(w)
+			cmd.Execute()
+			w.Close()
 
-	if err != nil {
-		t.Errorf("Could not get current working directory")
-	}
+			// Check if dir changed
+			newCwd, err := os.Getwd()
+			assert.Nil(t, err)
+			assert.Equal(t, tc.expectedCwd, newCwd)
 
-	if newCwd == cwd {
-		t.Errorf("Directory did not change")
+			// Read error stream
+			buf := make([]byte, 1024)
+			_, err = r.Read(buf)
+			if len(tc.expectedErr) == 0 {
+				assert.Equal(t, consts.EOFError, err)
+			} else {
+				assert.Nil(t, err)
+				assert.Equal(t, tc.expectedErr, strings.Trim(string(buf), "\x00"))
+			}
+		})
 	}
 
 }

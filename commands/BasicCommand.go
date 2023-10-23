@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 	"os"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type BasicCommand struct {
@@ -25,7 +27,7 @@ func (c *BasicCommand) SetErrorPipe(pipe *os.File) {
 }
 
 func (c *BasicCommand) Execute() {
-	c.PrintError(fmt.Errorf("error: command not implemented"))
+	c.PrintError(consts.UnimplementedError)
 }
 
 func (c *BasicCommand) Print(message string) {
@@ -39,7 +41,8 @@ func (c *BasicCommand) Print(message string) {
 	}
 
 	if lenWritten < len(message) {
-		c.PrintErrorString(fmt.Sprintf("error: could not write all bytes to output pipe (%d written, %d message)", lenWritten, len(message)))
+		c.PrintErrorString(
+			fmt.Sprintf(consts.WriteErrFormatStr, lenWritten, len(message)))
 	}
 }
 

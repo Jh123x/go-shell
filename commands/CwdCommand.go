@@ -2,6 +2,8 @@ package commands
 
 import (
 	"os"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type CwdCommand struct {
@@ -10,7 +12,8 @@ type CwdCommand struct {
 
 func (c CwdCommand) Execute() {
 	if len(c.args) > 0 {
-		c.PrintErrorString("cwd: too many arguments")
+		c.PrintErrorString(consts.TooManyArgsErrStr)
+		return
 	}
 	cwd, err := os.Getwd()
 	c.PrintError(err)

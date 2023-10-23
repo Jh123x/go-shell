@@ -2,9 +2,11 @@ package commands
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
-	"strings"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type PrintFileCommand struct {
@@ -18,22 +20,25 @@ func (p PrintFileCommand) Execute() {
 		io.Copy(p.outputPipe, p.inputPipe)
 		return
 	}
-	file, err := os.Open(p.args[0])
-	if err != nil {
-		p.PrintError(err)
-		return
-	}
-	defer file.Close()
+	for _, fileName := range p.args {
+		file, err := os.Open(fileName)
+		if err != nil {
+			p.PrintErrorString(
+				fmt.Sprintf(consts.FileNotFoundErrStr, fileName),
+			)
+			return
+		}
+		defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	arr := []string{}
-	for scanner.Scan() {
-		arr = append(arr, scanner.Text())
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			p.Print(scanner.Text())
+		}
+		if err := scanner.Err(); err != nil {
+			p.PrintError(scanner.Err())
+			return
+		}
 	}
-
-	p.Print(strings.Join(arr, "\n"))
-	err = scanner.Err()
-	p.PrintError(err)
 }
 
 // Constructor

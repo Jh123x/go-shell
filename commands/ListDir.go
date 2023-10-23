@@ -3,6 +3,8 @@ package commands
 import (
 	"os"
 	"strings"
+
+	"github.com/Jh123x/go-shell/consts"
 )
 
 type ListDirectoryCommand struct {
@@ -12,6 +14,10 @@ type ListDirectoryCommand struct {
 func (l ListDirectoryCommand) Execute() {
 	arg := "./"
 	if len(l.args) > 1 {
+		l.PrintErrorString(consts.TooManyArgsErrStr)
+		return
+	}
+	if len(l.args) == 1 {
 		arg = l.args[0]
 	}
 	entries, err := os.ReadDir(arg)

@@ -1,9 +1,13 @@
 package commands
 
 import (
+	"io"
 	"os"
 	"os/exec"
 	"testing"
+
+	"github.com/Jh123x/go-shell/consts"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewExitCommand(t *testing.T) {
@@ -18,15 +22,27 @@ func TestNewExitCommand(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(
-			"TestNewExitCommand",
-			func(t *testing.T) {
-				if got := NewExitCommand(tt.args); got == nil {
-					t.Errorf("NewExitCommand() returned nil")
-				}
-			},
-		)
+		t.Run("TestNewExitCommand", func(t *testing.T) {
+			assert.NotNil(t, NewExitCommand(tt.args))
+		})
 	}
+}
+
+func TestExecuteExitWithArgs(t *testing.T) {
+
+	// Create pipe
+	r, w, err := os.Pipe()
+	assert.Nil(t, err)
+
+	cmd := NewExitCommand([]string{"test"})
+	cmd.SetErrorPipe(w)
+	cmd.Execute()
+	w.Close()
+
+	// Read from pipe
+	res, err := io.ReadAll(r)
+	assert.Nil(t, err)
+	assert.Equal(t, consts.TooManyArgsErrStr+"\n", string(res))
 }
 
 func TestExecuteExit(t *testing.T) {
@@ -37,7 +53,5 @@ func TestExecuteExit(t *testing.T) {
 	cmd := exec.Command(os.Args[0], "-test.run=TestCrasher")
 	cmd.Env = append(os.Environ(), "BE_CRASHER=1")
 	err := cmd.Run()
-	if err != nil {
-		t.Errorf("ExitCommand did not exit correctly.")
-	}
+	assert.Nil(t, err)
 }
