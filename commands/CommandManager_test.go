@@ -28,7 +28,7 @@ func TestGetCommand(t *testing.T) {
 	cm := NewCommandManager()
 
 	// Create the tests
-	for cmd, _ := range mappedCommands {
+	for cmd := range mappedCommands {
 		tests = append(tests, args{
 			name: cmd,
 			arg:  cmd,
