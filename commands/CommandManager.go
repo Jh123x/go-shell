@@ -15,15 +15,16 @@ func (c *CommandManager) GetCommandMap() map[string]func(args []string) Command 
 }
 
 var mappedCommands = map[string]func(args []string) Command{
-	"dir":  NewListDirectoryCommand,
-	"ls":   NewListDirectoryCommand,
-	"cd":   NewChangeDirectoryCommand,
-	"pwd":  NewCwdCommand,
-	"exit": NewExitCommand,
-	"cat":  NewPrintFileCommand,
-	"rm":   NewRemoveFileCommand,
-	"up":   NewUpperCommand,
-	"dn":   NewLowerCommand,
+	"dir":   NewListDirectoryCommand,
+	"ls":    NewListDirectoryCommand,
+	"cd":    NewChangeDirectoryCommand,
+	"pwd":   NewCwdCommand,
+	"exit":  NewExitCommand,
+	"cat":   NewPrintFileCommand,
+	"rm":    NewRemoveFileCommand,
+	"up":    NewUpperCommand,
+	"dn":    NewLowerCommand,
+	"clear": NewClearCommand,
 }
 
 func NewCommandManager() *CommandManager {
