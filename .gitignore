@@ -22,3 +22,7 @@ go.work
 
 # Ignore tmp file
 .tmp
+.vscode/
+
+# Ignore coverage files
+coverage
