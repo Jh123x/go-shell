@@ -15,14 +15,17 @@ func TestNewClearCommand(t *testing.T) {
 
 func TestExecuteClearCmd(t *testing.T) {
 	tests := map[string]struct {
+		args        []string
 		expectedErr string
 		isSuccess   bool
 	}{
 		"clear with args error": {
+			args:        []string{"a"},
 			expectedErr: consts.TooManyArgsErrStr + "\n",
 			isSuccess:   false,
 		},
 		"clear with no args": {
+			args:        []string{},
 			expectedErr: "",
 			isSuccess:   true,
 		},
@@ -30,7 +33,7 @@ func TestExecuteClearCmd(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			c := NewClearCommand([]string{})
+			c := NewClearCommand(tc.args)
 
 			// Setup pipes
 			r, w, err := os.Pipe()
@@ -43,6 +46,8 @@ func TestExecuteClearCmd(t *testing.T) {
 			c.SetErrorPipe(wErr)
 
 			c.Execute()
+			w.Close()
+			wErr.Close()
 			errMsg, err := io.ReadAll(rErr)
 			assert.Nil(t, err)
 			assert.Equal(t, tc.expectedErr, string(errMsg))
@@ -51,7 +56,7 @@ func TestExecuteClearCmd(t *testing.T) {
 			}
 			msg, err := io.ReadAll(r)
 			assert.Nil(t, err)
-			assert.Equal(t, "\x1b\x5b\x48\x1b\x5b\x32\x4a", string(msg))
+			assert.Equal(t, "\x1b\x5b\x48\x1b\x5b\x32\x4a\n", string(msg))
 		})
 	}
 }
